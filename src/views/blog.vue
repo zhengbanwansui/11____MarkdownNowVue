@@ -96,7 +96,6 @@ export default {
       this.$axios
         .get(this.$store.state.ip + "/api/blogroll")
         .then(response => {
-          console.log("@!31231312");
           console.log(response);
           this.blogroll = response.data;
         })
@@ -106,7 +105,7 @@ export default {
       this.$axios
         .get(
           "http://www.tianqiapi.com/api?" +
-            "version=v61&appid=23035354&appsecret=8YvlPNrz"
+            "version=v61&appid=63193281(暂时不使用)&appsecret=RB9LS7aK"
         )
         .then(response => {
           console.log(response);

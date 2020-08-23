@@ -57,6 +57,22 @@
       </el-tab-pane>
       <el-tab-pane label="个人信息" name="second">
         <div style="text-align: center; width: 300px;margin: 0 auto">
+          <el-avatar :size="100" fit="cover" :src="getAvatarUrl"></el-avatar>
+          <br />
+          <a href="javascript:;" class="file">
+            选择头像文件
+            <input
+              @change="getAvatarFile"
+              type="file"
+              ref="refInputFile"
+              accept="image/png,image/jpeg,image/gif,image/jpg"
+            />
+          </a>
+          <br />
+          <el-button style="" type="success" @click="uploadAvatarFile"
+            >修改头像</el-button
+          >
+          <br />
           用户名：<el-input v-model="userData.name" disabled></el-input>
           积分：<el-input v-model="userData.point" disabled></el-input>
           是否为管理员：<el-input v-model="isAdminComputed" disabled></el-input>
@@ -74,6 +90,9 @@
 export default {
   data() {
     return {
+      avatarUrl:
+        "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3531761125,3665413676&fm=26&gp=0.jpg",
+      fileParam: null,
       activeName: "first",
       userData: {
         name: "",
@@ -87,8 +106,44 @@ export default {
     };
   },
   methods: {
+    getCurrentAvatar() {
+      this.$axios
+        .get(
+          this.$store.state.ip +
+            "/api/avatars/current?userId=" +
+            localStorage.getItem("userId")
+        )
+        .then(response => {
+          console.log(response.data);
+          this.avatarUrl =
+            "http://192.168.1.111:9000/avatar/" + response.data["fileName"];
+        })
+        .catch(error => console.log(error));
+    },
+    getAvatarFile(event) {
+      let file = event.target.files[0];
+      this.fileParam = new FormData();
+      this.fileParam.append("file", file);
+      this.fileParam.append("userId", localStorage.getItem("userId"));
+      console.log("获取到文件：");
+      console.log(this.fileParam.get("file"));
+    },
+    uploadAvatarFile() {
+      // 上传开始
+      this.$axios
+        .post(this.$store.state.ip + "/api/avatars", this.fileParam)
+        .then(response => {
+          console.log(response.data);
+          this.getCurrentAvatar();
+          // 上传成功
+        })
+        .catch(error => {
+          console.log(error);
+          // 上传失败
+        });
+    },
     showPage() {
-      return localStorage.getItem('userId') != null;
+      return localStorage.getItem("userId") != null;
     },
     addNewBlog() {
       this.$router.push("/add");
@@ -132,6 +187,9 @@ export default {
     }
   },
   computed: {
+    getAvatarUrl() {
+      return this.avatarUrl;
+    },
     isAdminComputed: function() {
       if (this.userData.isAdmin === 1) {
         return "是";
@@ -145,6 +203,7 @@ export default {
   created() {
     this.getUserData();
     this.getMyBlogs();
+    this.getCurrentAvatar();
   }
 };
 </script>
@@ -165,5 +224,32 @@ export default {
 .image {
   width: 230px;
   height: 230px;
+}
+
+.file {
+  position: relative;
+  display: inline-block;
+  background: #d0eeff;
+  border: 1px solid #99d3f5;
+  border-radius: 4px;
+  padding: 4px 12px;
+  overflow: hidden;
+  color: #1e88c7;
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 20px;
+}
+.file input {
+  position: absolute;
+  font-size: 100px;
+  right: 0;
+  top: 0;
+  opacity: 0;
+}
+.file:hover {
+  background: #aadffd;
+  border-color: #78c3f3;
+  color: #004974;
+  text-decoration: none;
 }
 </style>

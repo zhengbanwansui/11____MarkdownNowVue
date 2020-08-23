@@ -4,8 +4,7 @@
       <router-link to="/">博客大厅</router-link> |
       <router-link to="/login">登录</router-link> |
       <router-link to="/register">注册</router-link> |
-      <router-link to="/personal">个人中心</router-link> |
-      <router-link to="/chat">聊天室</router-link>
+      <router-link to="/personal">个人中心</router-link>
     </div>
     <div
       style="width: 100%; height: 80px;"
