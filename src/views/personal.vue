@@ -57,8 +57,9 @@
       </el-tab-pane>
       <el-tab-pane label="个人信息" name="second">
         <div style="text-align: center; width: 300px;margin: 0 auto">
-          <el-avatar :size="100" fit="cover" :src="getAvatarUrl"></el-avatar>
+          <el-avatar :size="100" fit="cover" v-loading="avatarLoading" :src="getAvatarUrl"></el-avatar>
           <br />
+
           <a href="javascript:;" class="file">
             选择头像文件
             <input
@@ -90,6 +91,7 @@
 export default {
   data() {
     return {
+      avatarLoading: false,
       avatarUrl:
         "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3531761125,3665413676&fm=26&gp=0.jpg",
       fileParam: null,
@@ -130,16 +132,29 @@ export default {
     },
     uploadAvatarFile() {
       // 上传开始
+      this.avatarLoading = true;
       this.$axios
         .post(this.$store.state.ip + "/api/avatars", this.fileParam)
         .then(response => {
           console.log(response.data);
           this.getCurrentAvatar();
           // 上传成功
+          this.avatarLoading = false;
+          this.$message({
+            showClose: true,
+            message: "头像上传成功",
+            type: "success"
+          });
         })
         .catch(error => {
           console.log(error);
           // 上传失败
+          this.avatarLoading = false;
+          this.$message({
+            showClose: true,
+            message: "头像上传失败",
+            type: "error"
+          });
         });
     },
     showPage() {
