@@ -98,19 +98,21 @@
                 :key="item['id']"
                 style="width: 100px;height: 100px;"
               >
-                <el-popconfirm
-                  @onConfirm="changeToHistoryAvatar(item.id)"
-                  title="确认修改为此头像吗？"
+                <el-popover
                   placement="bottom"
-                  width="200"
-                  trigger="click">
+                  width="300">
+                  <p>设置为当前头像或者删除它：</p>
+                  <div style="text-align: right; margin: 0">
+                    <el-button type="danger" size="mini" @click="deleteAvatar(item.id)">删除此头像</el-button>
+                    <el-button type="success" size="mini" @click="changeToHistoryAvatar(item.id)">设置为当前头像</el-button>
+                  </div>
                   <el-avatar
                     slot="reference"
                     :src="'http://192.168.1.111:9000/avatar/' + item.fileName"
                     :size="100"
                     fit="cover"
                   ></el-avatar>
-                </el-popconfirm>
+                </el-popover>
               </div>
             </div>
             <span slot="footer" class="dialog-footer"></span>
@@ -154,6 +156,15 @@ export default {
     };
   },
   methods: {
+    deleteAvatar(avatarId) {
+      this.$axios
+        .delete(this.$store.state.ip + "/api/avatars/" + avatarId)
+        .then(response => {
+          console.log(response);
+          this.$router.go(0);
+        })
+        .catch(error => console.log(error));
+    },
     changeToHistoryAvatar(avatarId) {
       this.$axios
         .put(this.$store.state.ip + "/api/avatars/" + avatarId)
