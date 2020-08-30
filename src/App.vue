@@ -6,9 +6,7 @@
       <router-link to="/register">注册</router-link> |
       <router-link to="/personal">个人中心</router-link>
     </div>
-    <div
-      style="width: 100%; height: 80px;"
-    >
+    <div style="width: 100%; height: 80px;">
       &nbsp;
     </div>
     <router-view style="z-index: 999;" />
@@ -23,7 +21,6 @@
   text-align: center;
   color: #2c3e50;
 }
-
 #nav {
   padding-top: 30px;
   position: fixed;

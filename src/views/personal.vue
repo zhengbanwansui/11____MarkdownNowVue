@@ -57,22 +57,64 @@
       </el-tab-pane>
       <el-tab-pane label="个人信息" name="second">
         <div style="text-align: center; width: 300px;margin: 0 auto">
-          <el-avatar :size="100" fit="cover" v-loading="avatarLoading" :src="getAvatarUrl"></el-avatar>
+          <el-avatar
+            :size="100"
+            fit="cover"
+            v-loading="avatarLoading"
+            :src="getAvatarUrl"
+          ></el-avatar>
           <br />
-
-          <a href="javascript:;" class="file">
-            选择头像文件
-            <input
-              @change="getAvatarFile"
-              type="file"
-              ref="refInputFile"
-              accept="image/png,image/jpeg,image/gif,image/jpg"
-            />
-          </a>
-          <br />
-          <el-button style="" type="success" @click="uploadAvatarFile"
+          <el-button type="success" @click="dialogVisible = true"
             >修改头像</el-button
           >
+          <el-dialog
+            title="修改头像"
+            :visible.sync="dialogVisible"
+            width="100%"
+          >
+            重新上传
+            <br />
+            <br />
+            <a href="javascript:;" class="file">
+              选择新头像文件
+              <input
+                @change="getAvatarFile"
+                type="file"
+                ref="refInputFile"
+                accept="image/png,image/jpeg,image/gif,image/jpg"
+              />
+            </a>
+            <br />
+            <el-button style="" type="success" @click="uploadAvatarFile"
+              >上传新头像</el-button
+            >
+            <el-divider></el-divider>
+            使用历史头像
+            <br />
+            <br />
+            <div class="avatarFather">
+              <div
+                v-for="item in avatarHistory"
+                :key="item['id']"
+                style="width: 100px;height: 100px;"
+              >
+                <el-popconfirm
+                  @onConfirm="changeToHistoryAvatar(item.id)"
+                  title="确认修改为此头像吗？"
+                  placement="bottom"
+                  width="200"
+                  trigger="click">
+                  <el-avatar
+                    slot="reference"
+                    :src="'http://192.168.1.111:9000/avatar/' + item.fileName"
+                    :size="100"
+                    fit="cover"
+                  ></el-avatar>
+                </el-popconfirm>
+              </div>
+            </div>
+            <span slot="footer" class="dialog-footer"></span>
+          </el-dialog>
           <br />
           用户名：<el-input v-model="userData.name" disabled></el-input>
           积分：<el-input v-model="userData.point" disabled></el-input>
@@ -80,7 +122,9 @@
           电子邮箱：<el-input v-model="userData.email" clearable></el-input>
           个性签名：<el-input v-model="userData.sign" clearable></el-input>
           个人简介：<el-input v-model="userData.info" clearable></el-input>
-          <el-button type="success" @click="changePersonalData">修改</el-button>
+          <el-button type="success" slot="reference" @click="changePersonalData"
+            >修改</el-button
+          >
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -91,11 +135,13 @@
 export default {
   data() {
     return {
+      dialogVisible: false,
       avatarLoading: false,
+      avatarHistory: null,
       avatarUrl:
         "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3531761125,3665413676&fm=26&gp=0.jpg",
       fileParam: null,
-      activeName: "first",
+      activeName: "second",
       userData: {
         name: "",
         isAdmin: null,
@@ -108,11 +154,33 @@ export default {
     };
   },
   methods: {
+    changeToHistoryAvatar(avatarId) {
+      this.$axios
+        .put(this.$store.state.ip + "/api/avatars/" + avatarId)
+        .then(response => {
+          console.log(response);
+          this.$router.go(0);
+        })
+        .catch(error => console.log(error));
+    },
+    getHistoryAvatar() {
+      this.$axios
+        .get(
+          this.$store.state.ip +
+            "/api/avatars/history/" +
+            localStorage.getItem("userId")
+        )
+        .then(response => {
+          console.log(response.data);
+          this.avatarHistory = response.data;
+        })
+        .catch(error => console.log(error));
+    },
     getCurrentAvatar() {
       this.$axios
         .get(
           this.$store.state.ip +
-            "/api/avatars/current?userId=" +
+            "/api/avatars/current/" +
             localStorage.getItem("userId")
         )
         .then(response => {
@@ -145,6 +213,7 @@ export default {
             message: "头像上传成功",
             type: "success"
           });
+          this.$router.go(0);
         })
         .catch(error => {
           console.log(error);
@@ -169,7 +238,7 @@ export default {
     changePersonalData() {
       console.log(this.userData);
       this.$axios
-        .put(this.$store.state.ip + "/api/user/", this.userData)
+        .put(this.$store.state.ip + "/api/user", this.userData)
         .then(response => {
           console.log(response);
           if (response.status === 200) {
@@ -219,6 +288,7 @@ export default {
     this.getUserData();
     this.getMyBlogs();
     this.getCurrentAvatar();
+    this.getHistoryAvatar();
   }
 };
 </script>
@@ -244,15 +314,16 @@ export default {
 .file {
   position: relative;
   display: inline-block;
-  background: #d0eeff;
-  border: 1px solid #99d3f5;
+  background: #67c23a;
+  border: 1px solid #67c23a;
   border-radius: 4px;
-  padding: 4px 12px;
+  padding: 12px 20px;
   overflow: hidden;
-  color: #1e88c7;
+  font-size: 14px;
+  color: #ffffff;
   text-decoration: none;
   text-indent: 0;
-  line-height: 20px;
+  line-height: 14px;
 }
 .file input {
   position: absolute;
@@ -262,9 +333,17 @@ export default {
   opacity: 0;
 }
 .file:hover {
-  background: #aadffd;
-  border-color: #78c3f3;
-  color: #004974;
+  background: #85ce61;
+  border-color: #85ce61;
+  color: #ffffff;
   text-decoration: none;
+}
+.avatarFather {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  text-align: center;
 }
 </style>
