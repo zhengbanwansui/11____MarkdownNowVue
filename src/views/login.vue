@@ -1,6 +1,6 @@
 <template>
   <div style="width: 300px; margin-left: auto;margin-right: auto">
-    <br>
+    <br />
     <div v-show="!isLogin">
       <div class="flexDiv">
         <el-input v-model="form.name" placeholder="请输入用户名"></el-input>

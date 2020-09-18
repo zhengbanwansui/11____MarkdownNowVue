@@ -98,13 +98,21 @@
                 :key="item['id']"
                 style="width: 100px;height: 100px;"
               >
-                <el-popover
-                  placement="bottom"
-                  width="300">
+                <el-popover placement="bottom" width="300">
                   <p>设置为当前头像或者删除它：</p>
                   <div style="text-align: right; margin: 0">
-                    <el-button type="danger" size="mini" @click="deleteAvatar(item.id)">删除此头像</el-button>
-                    <el-button type="success" size="mini" @click="changeToHistoryAvatar(item.id)">设置为当前头像</el-button>
+                    <el-button
+                      type="danger"
+                      size="mini"
+                      @click="deleteAvatar(item.id)"
+                      >删除此头像</el-button
+                    >
+                    <el-button
+                      type="success"
+                      size="mini"
+                      @click="changeToHistoryAvatar(item.id)"
+                      >设置为当前头像</el-button
+                    >
                   </div>
                   <el-avatar
                     slot="reference"
@@ -129,12 +137,19 @@
           >
         </div>
       </el-tab-pane>
+      <el-tab-pane label="从天而降的神奇工具箱" name="third">
+        <utils></utils>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
+import utils from "@/components/utils.vue";
 export default {
+  components: {
+    utils
+  },
   data() {
     return {
       dialogVisible: false,
@@ -249,7 +264,11 @@ export default {
     changePersonalData() {
       console.log(this.userData);
       this.$axios
-        .put(this.$store.state.ip + "/api/user", this.userData)
+        .put(this.$store.state.ip + "/api/user", this.userData, {
+          headers: {
+            "access-control-allow-origin": "*"
+          }
+        })
         .then(response => {
           console.log(response);
           if (response.status === 200) {

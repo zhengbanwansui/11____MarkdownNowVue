@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     userId: -1,
     token: "",
-    ip: "http://192.168.1.65"
+    ip: "http://localhost"
   },
   mutations: {},
   actions: {},

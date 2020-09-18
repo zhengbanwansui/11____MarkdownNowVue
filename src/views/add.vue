@@ -103,7 +103,7 @@ export default {
       console.log("保存文章为");
       console.log(this.blog);
       this.$axios
-        .post(this.$store.state.ip + "/api/blogs/", this.blog)
+        .post(this.$store.state.ip + "/api/blogs", this.blog)
         .then(response => {
           console.log(response.data);
           this.$message({
