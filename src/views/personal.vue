@@ -116,7 +116,7 @@
                   </div>
                   <el-avatar
                     slot="reference"
-                    :src="'http://192.168.1.111:9000/avatar/' + item.fileName"
+                    :src="minioAddressAndPort + '/avatar/' + item.fileName"
                     :size="100"
                     fit="cover"
                   ></el-avatar>
@@ -152,6 +152,7 @@ export default {
   },
   data() {
     return {
+      minioAddressAndPort: this.$store.state.minioAddress,
       dialogVisible: false,
       avatarLoading: false,
       avatarHistory: null,
@@ -203,6 +204,7 @@ export default {
         .catch(error => console.log(error));
     },
     getCurrentAvatar() {
+      let ip = this.$store.state.minioAddress;
       this.$axios
         .get(
           this.$store.state.ip +
@@ -211,8 +213,8 @@ export default {
         )
         .then(response => {
           console.log(response.data);
-          this.avatarUrl =
-            "http://192.168.1.111:9000/avatar/" + response.data["fileName"];
+          this.avatarUrl = ip + "/avatar/" + response.data["fileName"];
+          console.log(this.avatarUrl);
         })
         .catch(error => console.log(error));
     },
@@ -239,7 +241,7 @@ export default {
             message: "头像上传成功",
             type: "success"
           });
-          this.$router.go(0);
+          //this.$router.go(0);
         })
         .catch(error => {
           console.log(error);
