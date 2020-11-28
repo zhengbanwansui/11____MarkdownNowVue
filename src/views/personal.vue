@@ -241,7 +241,7 @@ export default {
             message: "头像上传成功",
             type: "success"
           });
-          //this.$router.go(0);
+          this.$router.go(0);
         })
         .catch(error => {
           console.log(error);

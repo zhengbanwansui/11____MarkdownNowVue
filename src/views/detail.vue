@@ -31,15 +31,58 @@
           <span class="commentName">{{ item["commentUserName"] }}</span>
           :
           {{ item["content"] }}
+          <el-popover>
+            <el-input type="text" v-model="myCommentChild"></el-input>
+            <el-button
+              @click="addTargetComment(item.id)"
+              type="text"
+              style="margin-left: 20px"
+            >发送</el-button
+            >
+            <el-button type="text" style="margin-left: 20px" slot="reference"
+            >评论</el-button
+            >
+          </el-popover>
           <el-button
             @click="deleteMyComment(item.id)"
             v-if="showDeleteButton(item.commentUserId)"
             type="text"
             style="margin-left: 20px"
-          >删除</el-button
+            >删除</el-button
           >
         </p>
+        <div
+          class="childComment"
+          v-for="child in item['childComment']"
+          :key="child.id"
+        >
+          <p class="commentContent">
+            <span class="commentName">{{ child["commentUserName"] }}</span>
+            :
+            <span class="commentNameAt">@{{ child["targetUserName"] }}</span>
+            {{ child["content"] }}
 
+            <el-popover>
+              <el-input type="text" v-model="myCommentChild"></el-input>
+              <el-button
+                @click="addInsideTargetComment(item.id, child['commentUserId'])"
+                type="text"
+                style="margin-left: 20px"
+                >发送</el-button
+              >
+              <el-button type="text" style="margin-left: 20px" slot="reference"
+                >评论</el-button
+              >
+            </el-popover>
+            <el-button
+              @click="deleteMyComment(child.id)"
+              v-if="showDeleteButton(child.commentUserId)"
+              type="text"
+              style="margin-left: 20px"
+              >删除</el-button
+            >
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -53,13 +96,13 @@ export default {
         text: "null"
       },
       commentList: null,
-      myComment: ""
+      myComment: "",
+      myCommentChild: ""
     };
   },
   async created() {
     await this.getBlogDetail();
     await this.getCommentList();
-    await this.getCommentAuthorName();
   },
   methods: {
     deleteMyComment(commentId) {
@@ -81,11 +124,10 @@ export default {
     },
     addComment() {
       this.$axios
-        .post(this.$store.state.ip + "/api/blogComment", {
+        .post(this.$store.state.ip + "/api/blogComment/father", {
           blogId: this.$route.params.id,
           commentUserId: localStorage.getItem("userId"),
           content: this.myComment,
-          id: null,
           targetCommentId: null,
           time: this.dateFormat()
         })
@@ -100,34 +142,53 @@ export default {
         })
         .catch(error => console.log(error));
     },
-    async getCommentAuthorName() {
-      console.log("@@");
-      for (let i = 0; i < this.commentList.length; i++) {
-        console.log(this.commentList[i]["commentUserId"]);
-        await this.$axios
-          .get(
-            this.$store.state.ip +
-              "/api/user/" +
-              this.commentList[i]["commentUserId"]
-          )
-          .then(response => {
-            console.log("找到名字" + response.data.name);
-            this.$set(
-              this.commentList[i],
-              "commentUserName",
-              response.data.name
-            );
+    addTargetComment(commentId) {
+      this.$axios
+        .post(this.$store.state.ip + "/api/blogComment/child", {
+          blogId: this.$route.params.id,
+          commentUserId: localStorage.getItem("userId"),
+          content: this.myCommentChild,
+          targetCommentId: commentId,
+          time: this.dateFormat()
+        })
+        .then(response => {
+          console.log(response);
+          this.$message({
+            showClose: true,
+            message: "评论成功",
+            type: "success"
           });
-      }
-
-      console.log("@@");
+          this.$router.go(0);
+        })
+        .catch(error => console.log(error));
+    },
+    addInsideTargetComment(commentId, targetUserId) {
+      this.$axios
+        .post(this.$store.state.ip + "/api/blogComment/child", {
+          blogId: this.$route.params.id,
+          commentUserId: localStorage.getItem("userId"),
+          content: this.myCommentChild,
+          targetCommentId: commentId,
+          time: this.dateFormat(),
+          targetUserId: targetUserId
+        })
+        .then(response => {
+          console.log(response);
+          this.$message({
+            showClose: true,
+            message: "评论成功",
+            type: "success"
+          });
+          this.$router.go(0);
+        })
+        .catch(error => console.log(error));
     },
     async getCommentList() {
       await this.$axios
         .get(this.$store.state.ip + "/api/blogComment/" + this.$route.params.id)
         .then(response => {
           this.commentList = response.data;
-          console.log("在？看看评论 ");
+          console.log("在？看看评论 博客号 " + this.$route.params.id);
           console.log(this.commentList);
         })
         .catch(error => console.log(error));
@@ -182,6 +243,11 @@ export default {
   color: #42b983;
   font-weight: bold;
 }
+.commentNameAt {
+  font-size: medium;
+  color: #42b983;
+  font-weight: bold;
+}
 .commentContent {
   font-size: medium;
 }
@@ -204,5 +270,9 @@ export default {
     width: 100%;
     text-align: left;
   }
+}
+.childComment {
+  width: 100%;
+  padding-left: 80px;
 }
 </style>
