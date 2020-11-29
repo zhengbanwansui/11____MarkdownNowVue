@@ -1,5 +1,14 @@
 <template>
   <div>
+    <a href="javascript:;" class="file">
+      上传封面图
+      <input
+        @change="getAvatarFile"
+        type="file"
+        ref="refInputFile"
+        accept="image/png,image/jpeg,image/gif,image/jpg"
+      />
+    </a>
     <el-input
       style="font-size: 26px;"
       placeholder="请输入标题"
@@ -24,13 +33,15 @@
 export default {
   data() {
     return {
+      fileParam: null,
       blog: {
         id: -1,
         authorId: localStorage.userId,
         title: "文章标题",
         text: "# 正文\n## 正文\n### 正文\n#### 正文\n##### 正文\n###### 正文",
         createTime: "",
-        changeTime: ""
+        changeTime: "",
+        coverPicture: null
       },
       toolbars: {
         bold: true, // 粗体
@@ -97,13 +108,27 @@ export default {
         seconds
       );
     },
+    getAvatarFile(event) {
+      let file = event.target.files[0];
+      this.fileParam = new FormData();
+      this.fileParam.append("file", file);
+      console.log("获取到文件：");
+      console.log(this.fileParam.get("file"));
+    },
     saveBlog() {
-      this.blog.changeTime = this.dateFormat();
-      this.blog.createTime = this.dateFormat();
+      let formObject = new FormData();
+      if (this.fileParam != null) {
+        formObject = this.fileParam;
+      }
+      formObject.append("authorId", localStorage.userId);
+      formObject.append("title", this.blog.title);
+      formObject.append("text", this.blog.text);
+      formObject.append("createTime", this.dateFormat());
+      formObject.append("changeTime", this.dateFormat());
       console.log("保存文章为");
       console.log(this.blog);
       this.$axios
-        .post(this.$store.state.ip + "/api/blogs", this.blog)
+        .post(this.$store.state.ip + "/api/blogs", formObject)
         .then(response => {
           console.log(response.data);
           this.$message({
@@ -128,5 +153,32 @@ export default {
   right: 0;
   bottom: 0;
   z-index: 2000;
+}
+.file {
+  position: relative;
+  display: inline-block;
+  background: #67c23a;
+  border: 1px solid #67c23a;
+  border-radius: 4px;
+  padding: 12px 20px;
+  overflow: hidden;
+  font-size: 14px;
+  color: #ffffff;
+  text-decoration: none;
+  text-indent: 0;
+  line-height: 14px;
+}
+.file input {
+  position: absolute;
+  font-size: 100px;
+  right: 0;
+  top: 0;
+  opacity: 0;
+}
+.file:hover {
+  background: #85ce61;
+  border-color: #85ce61;
+  color: #ffffff;
+  text-decoration: none;
 }
 </style>

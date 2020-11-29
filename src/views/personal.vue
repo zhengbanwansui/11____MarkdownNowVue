@@ -36,7 +36,7 @@
               shadow="hover"
             >
               <img
-                src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3342498410,4092660790&fm=26&gp=0.jpg"
+                :src="minioAddressAndPort + '/cover/' + item['coverPicture']"
                 class="image"
                 alt="图片"
               />

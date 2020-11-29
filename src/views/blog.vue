@@ -11,9 +11,9 @@
             <div class="authorName">作者：{{ item["authorName"] }}</div>
           </div>
           <img
-            src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=2386449788,2727519679&fm=26&gp=0.jpg"
+            :src="minioAddressAndPort + '/cover/' + item['coverPicture']"
             class="image"
-            alt="图片"
+            alt="封面图出差了"
           />
           <div style="padding: 8px;height: 80px;">
             <div>
@@ -74,6 +74,7 @@
 export default {
   data() {
     return {
+      minioAddressAndPort: this.$store.state.minioAddress,
       blogroll: null,
       calendar: new Date(),
       blog: [],
