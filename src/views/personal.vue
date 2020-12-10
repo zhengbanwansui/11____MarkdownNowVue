@@ -137,7 +137,10 @@
           >
         </div>
       </el-tab-pane>
-      <el-tab-pane label="从天而降的神奇工具箱" name="third">
+      <el-tab-pane label="我的相册" name="third">
+        <gallery></gallery>
+      </el-tab-pane>
+      <el-tab-pane label="从天而降的神奇工具箱" name="fourth">
         <utils></utils>
       </el-tab-pane>
     </el-tabs>
@@ -146,9 +149,11 @@
 
 <script>
 import utils from "@/components/utils.vue";
+import gallery from "@/components/gallery.vue";
 export default {
   components: {
-    utils
+    utils,
+    gallery
   },
   data() {
     return {
