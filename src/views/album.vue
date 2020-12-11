@@ -12,8 +12,25 @@
     <div class="flexFather">
       <div v-for="picture in pictures['records']" :key="picture['id']">
         <el-card>
-          <img class="fitWidth" :src="minioAddressAndPort + '/picture/' + picture['fileName']" alt="">
+          <img
+            class="fitWidth"
+            :src="minioAddressAndPort + '/picture/' + picture['fileName']"
+            alt=""
+          />
           <h3>{{ picture["name"] }}</h3>
+          <el-button type="text" style="color: rgb(66,185,131);" @click="showDialogData(picture['name'], picture['fileName'])"
+            >查看图片</el-button
+          >
+          <el-dialog fullscreen :visible.sync="pictureDialogVisible">
+            <h3>{{ dialogData['fileName'] }}</h3>
+            <img :src="minioAddressAndPort + '/picture/' + dialogData['fileName']" alt="大图" />
+          </el-dialog>
+          <el-button
+            type="text"
+            style="color: red;"
+            @click="deletePicture(picture['id'])"
+            >删除</el-button
+          >
         </el-card>
       </div>
     </div>
@@ -22,7 +39,9 @@
       layout="prev, pager, next"
       :page-size="pictures.size"
       :total="pictures.total"
-      @prev-click="changePage(-1)" @next-click="changePage(1)" @current-change="currentChange"
+      @prev-click="changePage(-1)"
+      @next-click="changePage(1)"
+      @current-change="currentChange"
     >
     </el-pagination>
   </div>
@@ -33,16 +52,42 @@ export default {
   name: "album",
   data() {
     return {
+      dialogData: {
+        name: null,
+        fileName: null
+      },
       minioAddressAndPort: this.$store.state.minioAddress,
       pictures: null,
       current: 1,
-      fileParam: null
+      fileParam: null,
+      pictureDialogVisible: false
     };
   },
   created() {
     this.pagePictures();
   },
   methods: {
+    showDialogData(name, fileName) {
+      this.dialogData['name'] = name;
+      this.dialogData['fileName'] = fileName;
+      this.pictureDialogVisible = true;
+    },
+    deletePicture(id) {
+      this.$axios
+        .delete(this.$store.state.ip + "/markdownnow-blogroll/picture/" + id)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.$router.go(0);
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(error => console.log(error));
+    },
     getFileAndUpload(event) {
       let file = event.target.files[0];
       this.fileParam = new FormData();
@@ -53,8 +98,8 @@ export default {
       console.log(this.fileParam.get("file"));
       this.$axios
         .post(
-          this.$store.state.ip +
-          "/markdownnow-blogroll/picture/", this.fileParam
+          this.$store.state.ip + "/markdownnow-blogroll/picture/",
+          this.fileParam
         )
         .then(response => {
           if (response.data.code === 200) {
@@ -66,16 +111,21 @@ export default {
               type: "error"
             });
           }
-        }).catch(error => {console.log(error)});
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     currentChange(toPage) {
       this.current = toPage;
       this.$axios
         .get(
           this.$store.state.ip +
-          "/markdownnow-blogroll/picture/" + this.$route.params.id + "/current/" +
-          this.current +
-          "/size/10"
+            "/markdownnow-blogroll/picture/" +
+            this.$route.params.id +
+            "/current/" +
+            this.current +
+            "/size/10"
         )
         .then(response => {
           if (response.data.code === 200) {
@@ -103,9 +153,11 @@ export default {
       this.$axios
         .get(
           this.$store.state.ip +
-          "/markdownnow-blogroll/picture/" + this.$route.params.id + "/current/" +
-          this.current +
-          "/size/10"
+            "/markdownnow-blogroll/picture/" +
+            this.$route.params.id +
+            "/current/" +
+            this.current +
+            "/size/10"
         )
         .then(response => {
           if (response.data.code === 200) {
@@ -123,7 +175,9 @@ export default {
       this.$axios
         .get(
           this.$store.state.ip +
-            "/markdownnow-blogroll/picture/" + this.$route.params.id + "/current/" +
+            "/markdownnow-blogroll/picture/" +
+            this.$route.params.id +
+            "/current/" +
             1 +
             "/size/10"
         )
