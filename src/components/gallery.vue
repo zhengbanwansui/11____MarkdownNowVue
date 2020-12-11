@@ -79,7 +79,11 @@ export default {
   },
   methods: {
     showAlbumDetail(id) {
-      this.$router.push("/album/" + id);
+      //this.$router.push("/album/" + id);
+      let routeData = this.$router.resolve({
+        path: '/album/' + id
+      });
+      window.open(routeData.href, '_blank');
     },
     deleteAlbum(id) {
       this.$axios
