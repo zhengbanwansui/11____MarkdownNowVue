@@ -44,7 +44,13 @@
             :src="minioAddressAndPort + '/picture/' + album['coverFileName']"
             alt=""
           />
-          <h3 class="title">{{ album["name"] }}</h3>
+          <el-button class="title" @click="showAlbumDetail(album['id'])">{{ album["name"] }}</el-button>
+          <el-button
+            type="text"
+            style="color: red"
+            @click="deleteAlbum(album['id'])"
+            >删除</el-button
+          >
         </div>
       </el-card>
     </div>
@@ -72,6 +78,29 @@ export default {
     this.getAlbum();
   },
   methods: {
+    showAlbumDetail(id) {
+      this.$router.push("/album/" + id);
+    },
+    deleteAlbum(id) {
+      this.$axios
+        .delete(this.$store.state.ip + "/markdownnow-blogroll/album/" + id)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: "删除成功",
+              type: "success"
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(error => console.log(error));
+    },
     insertAlbum() {
       this.newAlbum["createTime"] = this.dateFormat();
       if (this.newAlbumOpen === true) {
@@ -168,7 +197,7 @@ export default {
 .cards {
   text-align: center;
   width: 210px;
-  height: 235px;
+  height: 265px;
   background-color: #f6f6f6;
 }
 .title {

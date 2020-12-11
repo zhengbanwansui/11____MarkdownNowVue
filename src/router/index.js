@@ -25,6 +25,11 @@ const routes = [
     component: () => import("../views/detail")
   },
   {
+    path: "/album/:id",
+    name: "Album",
+    component: () => import("../views/album")
+  },
+  {
     path: "/personal",
     name: "Personal",
     component: () => import("../views/personal")
