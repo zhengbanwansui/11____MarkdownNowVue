@@ -53,17 +53,22 @@ export default {
           name: this.form.name,
           password: this.form.password
         })
-        .then(function(response) {
-          console.log("success");
-          console.log(response);
+        .then(response => {
+          if (response.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: "注册成功",
+              type: "success"
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
         })
-        .catch(function(error) {
-          console.log("error");
-          console.log(error);
-        })
-        .then(function() {
-          console.log("请求完毕");
-        });
+        .catch(error => console.log(error));
     }
   }
 };

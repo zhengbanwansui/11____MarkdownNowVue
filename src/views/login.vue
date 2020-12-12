@@ -19,6 +19,7 @@
     <div v-show="isLogin">
       <el-button type="success" @click="onQuit">注销</el-button>
     </div>
+    <el-button @click="alert1"></el-button>
   </div>
 </template>
 
@@ -27,24 +28,36 @@ export default {
   data() {
     return {
       form: {
-        name: "",
-        password: "",
+        name: null,
+        password: null,
         isLogin: false
       }
     };
   },
   methods: {
+    alert1() {
+      alert(localStorage.getItem("userId") + " | " + localStorage.getItem("token"));
+    },
     async onSubmit() {
       let rt = this.$router;
+      let This = this;
       this.$axios.all([this.getToken(), this.getUserId()]).then(
-        this.$axios.spread(function(token, userId) {
-          if (token.data.length === 32) {
-            localStorage.setItem("token", token.data);
-            localStorage.setItem("userId", userId.data);
-            console.log("登陆成功，刷新页面");
+        this.$axios.spread(function(tokenResponse, userIdResponse) {
+          if (tokenResponse.data.code === 200) {
+            localStorage.setItem("token", tokenResponse.data.data);
+            localStorage.setItem("userId", userIdResponse.data);
+            This.$message({
+              showClose: true,
+              message: "登陆成功",
+              type: "success"
+            });
             rt.go(0);
           } else {
-            console.log("Token为空，登录失败");
+            This.$message({
+              showClose: true,
+              message: tokenResponse.data.msg,
+              type: "error"
+            });
           }
         })
       );
