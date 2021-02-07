@@ -7,8 +7,8 @@ export default new Vuex.Store({
   state: {
     userId: -1,
     token: "",
-    ip: "http://localhost:8090",
-    minioAddress: "http://localhost:9000"
+    ip: "http://127.0.0.1:8090",
+    minioAddress: "http://127.0.0.1:9000"
   },
   mutations: {},
   actions: {},

@@ -13,7 +13,9 @@
         ></el-input>
       </div>
       <div class="flexDiv">
-        <el-button type="success" @click="onSubmit">登录</el-button>
+        <el-button type="success" @click="securityLogin"
+          >登录</el-button
+        >
       </div>
     </div>
     <div v-show="isLogin">
@@ -35,48 +37,60 @@ export default {
     };
   },
   methods: {
-    alert1() {
-      alert(localStorage.getItem("userId") + " | " + localStorage.getItem("token"));
-    },
-    async onSubmit() {
+    securityLogin() {
+      if (
+        this.form.name === null ||
+        this.form.name === "" ||
+        this.form.password === null ||
+        this.form.password === ""
+      ) {
+        this.$message({
+          showClose: true,
+          message: "用户名或密码不能为空",
+          type: "error"
+        });
+        return;
+      }
+      // 用户名密码不为空时请求security的登录接口
+      let data =
+        "username=" + this.form.name + "&password=" + this.form.password;
       let rt = this.$router;
-      let This = this;
-      this.$axios.all([this.getToken(), this.getUserId()]).then(
-        this.$axios.spread(function(tokenResponse, userIdResponse) {
-          if (tokenResponse.data.code === 200) {
-            localStorage.setItem("token", tokenResponse.data.data);
-            localStorage.setItem("userId", userIdResponse.data);
-            This.$message({
-              showClose: true,
-              message: "登陆成功",
-              type: "success"
-            });
-            rt.go(0);
-          } else {
-            This.$message({
-              showClose: true,
-              message: tokenResponse.data.msg,
-              type: "error"
-            });
-          }
-        })
-      );
+      this.$axios({
+        url: this.$store.state.ip + "/auth/login",
+        method: "post",
+        data: data,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }).then(response => {
+        if (response.data.data === "登录失败") {
+          this.$message({
+            showClose: true,
+            message: "登录失败",
+            type: "error"
+          });
+        } else {
+          let jwt = response.data.data;
+          localStorage.setItem("token", jwt);
+          let stringArr = jwt.split(".");
+          let payload = stringArr[1];
+          let Base64 = require("js-base64").Base64;
+          let decodePayload = Base64.decode(payload);
+          console.log("载荷：" + decodePayload);
+          let result = JSON.parse(decodePayload);
+          localStorage.setItem("userId", result["id"]);
+          this.$message({
+            showClose: true,
+            message: "登陆成功",
+            type: "success"
+          });
+          rt.go(0);
+        }
+      });
     },
-    async getToken() {
-      let This = this;
-      return this.$axios.get(
-        This.$store.state.ip +
-          "/api/tokens?" +
-          "name=" +
-          this.form.name +
-          "&password=" +
-          this.form.password
-      );
-    },
-    async getUserId() {
-      let This = this;
-      return this.$axios.get(
-        This.$store.state.ip + "/api/user/id/" + this.form.name
+    alert1() {
+      alert(
+        localStorage.getItem("userId") + " | " + localStorage.getItem("token")
       );
     },
     onQuit() {

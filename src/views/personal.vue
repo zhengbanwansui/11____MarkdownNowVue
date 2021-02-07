@@ -55,7 +55,10 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="个人信息" name="second">
+      <el-tab-pane label="归档" name="second">
+        <archive></archive>
+      </el-tab-pane>
+      <el-tab-pane label="个人信息" name="third">
         <div style="text-align: center; width: 300px;margin: 0 auto">
           <el-avatar
             :size="100"
@@ -137,10 +140,10 @@
           >
         </div>
       </el-tab-pane>
-      <el-tab-pane label="我的相册" name="third">
+      <el-tab-pane label="我的相册" name="fourth">
         <gallery></gallery>
       </el-tab-pane>
-      <el-tab-pane label="从天而降的神奇工具箱" name="fourth">
+      <el-tab-pane label="从天而降的神奇工具箱" name="fifth">
         <utils></utils>
       </el-tab-pane>
     </el-tabs>
@@ -149,10 +152,12 @@
 
 <script>
 import utils from "@/components/utils.vue";
+import archive from "@/components/archive.vue";
 import gallery from "@/components/gallery.vue";
 export default {
   components: {
     utils,
+    archive,
     gallery
   },
   data() {
