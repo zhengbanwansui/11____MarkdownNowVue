@@ -1,11 +1,12 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link class="bigTitle" to="/">博客大厅</router-link>|
+      <router-link class="bigTitle" to="/">博客大厅</router-link> |
       <router-link class="bigTitle" to="/login">登录</router-link> |
       <router-link class="bigTitle" to="/register">注册</router-link>
       <div v-show="personalVisible">
         |<router-link class="bigTitle" to="/personal">个人中心</router-link>
+        |<router-link class="bigTitle" to="/search">搜索</router-link>
       </div>
     </div>
     <div style="width: 100%; height: 80px;">

@@ -8,8 +8,9 @@
               :body-style="{ padding: '10px 10px 0 10px' }"
               shadow="hover"
             >
+              <!--                https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1594879490170&di=165c2d3172e24ad6982f977e25274e2e&imgtype=0&src=http%3A%2F%2Fku.90sjimg.com%2Felement_origin_min_pic%2F00%2F26%2F48%2F8056d0dd3d72814.jpg-->
               <img
-                src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1594879490170&di=165c2d3172e24ad6982f977e25274e2e&imgtype=0&src=http%3A%2F%2Fku.90sjimg.com%2Felement_origin_min_pic%2F00%2F26%2F48%2F8056d0dd3d72814.jpg"
+                :src="minioAddressAndPort + '/picture/add-blog.jpg'"
                 class="image"
                 alt="图片"
               />

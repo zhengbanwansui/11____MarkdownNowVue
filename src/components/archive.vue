@@ -1,9 +1,13 @@
 <template>
   <div>
-    <el-tree :data="topArchiveData" :props="defaultProps"></el-tree>
-    <el-input v-model="archiveForm.year" placeholder="请输入年份"></el-input>
-    <el-input v-model="archiveForm.month" placeholder="请输入月份"></el-input>
-    <el-button type="success" @click="getOneArchive">查找归档的博客</el-button>
+    <div class="slim">
+      <el-tree :data="topArchiveData" :props="defaultProps"></el-tree>
+      <el-input v-model="archiveForm.year" placeholder="请输入年份"></el-input>
+      <el-input v-model="archiveForm.month" placeholder="请输入月份"></el-input>
+      <el-button type="success" @click="getOneArchive"
+        >查找归档的博客</el-button
+      >
+    </div>
     <div class="flexFather">
       <div
         style="width: 250px;height: 350px; display: block"
@@ -22,7 +26,7 @@
                 style="padding: 6px;color: rgb(66,185,131); font-weight: 800;"
                 type="text"
                 @click="toEditPage(item.id)"
-              >编辑博客</el-button
+                >编辑博客</el-button
               >
             </div>
             <span>{{ item.title }}</span>
@@ -71,6 +75,9 @@ export default {
     this.getArchive();
   },
   methods: {
+    toEditPage(articleId) {
+      this.$router.push("/edit/" + articleId);
+    },
     getOneArchive() {
       this.$axios
         .get(
@@ -151,5 +158,10 @@ export default {
   align-items: flex-start;
   flex-wrap: wrap;
   text-align: center;
+}
+.slim {
+  text-align: left;
+  width: 300px;
+  margin: 0 auto;
 }
 </style>
