@@ -25,6 +25,11 @@ const routes = [
     component: () => import("../views/detail")
   },
   {
+    path: "/user/:id",
+    name: "User",
+    component: () => import("../views/user")
+  },
+  {
     path: "/album/:id",
     name: "Album",
     component: () => import("../views/album")
@@ -43,6 +48,11 @@ const routes = [
     path: "/add",
     name: "Add",
     component: () => import("../views/add")
+  },
+  {
+    path: "/search/:str",
+    name: "Search",
+    component: () => import("../views/search")
   },
   {
     path: "/search",

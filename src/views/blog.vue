@@ -30,7 +30,14 @@
       </div>
     </div>
     <div class="sideBar">
-      <el-calendar class="calendar" v-model="calendar"> </el-calendar>
+      <div class="searchBar">
+        <el-input style="width: 330px"
+          v-model="searchString"
+          placeholder="请输入搜索的博客和用户名"
+        ></el-input>
+        <el-button type="success" @click="searchInfo">搜索</el-button>
+      </div>
+      <el-calendar class="calendar" v-model="calendar"></el-calendar>
       <el-card class="box-card" style="width: 400px">
         <div slot="header">
           <span style="color: rgb(66,185,151);font-weight: bold;font-size: 20px"
@@ -74,6 +81,7 @@
 export default {
   data() {
     return {
+      searchString: null,
       minioAddressAndPort: this.$store.state.minioAddress,
       blogroll: null,
       calendar: new Date(),
@@ -90,6 +98,12 @@ export default {
     this.getBlogroll();
   },
   methods: {
+    searchInfo() {
+      let routeData = this.$router.resolve({
+        path: "/search/" + this.searchString
+      });
+      window.open(routeData.href, "_blank");
+    },
     jumpToBlogroll(url) {
       window.open(url);
     },
@@ -158,6 +172,12 @@ export default {
   justify-content: space-around;
   align-items: flex-start;
   flex-wrap: wrap;
+}
+.searchBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 }
 .image {
   width: 230px;

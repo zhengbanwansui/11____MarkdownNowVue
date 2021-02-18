@@ -80,6 +80,10 @@ export default {
       user: []
     };
   },
+  created() {
+    this.searchString = this.$route.params.str;
+    this.getAllAuthorName();
+  },
   methods: {
     toUserPage(userId) {
       console.log("跳转用户页面" + userId.toString());
