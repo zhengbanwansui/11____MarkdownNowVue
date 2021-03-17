@@ -170,7 +170,7 @@ export default {
       avatarUrl:
         "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3531761125,3665413676&fm=26&gp=0.jpg",
       fileParam: null,
-      activeName: "second",
+      activeName: "third",
       userData: {
         name: "",
         isAdmin: null,
