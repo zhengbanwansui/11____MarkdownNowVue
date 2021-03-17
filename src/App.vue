@@ -7,6 +7,7 @@
       <div v-show="personalVisible">
         |<router-link class="bigTitle" to="/personal">个人中心</router-link>
         |<router-link class="bigTitle" to="/search">搜索</router-link>
+        |<router-link class="bigTitle" to="/mall">积分商城</router-link>
       </div>
     </div>
     <div style="width: 100%; height: 80px;">
