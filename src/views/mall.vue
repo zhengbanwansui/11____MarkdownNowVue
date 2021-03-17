@@ -61,8 +61,11 @@
       </div>
     </el-dialog>
     <!-- 创建订单按钮 -->
-    <el-button class="orderButton" @click="showOrder" type="success"
+    <el-button class="orderButton" @click="showOrder" type="warning"
       >查看我的订单</el-button
+    >
+    <el-button class="assetButton" @click="showAsset" type="success"
+      >查看我的资产</el-button
     >
     <!-- 订单窗口 -->
     <el-dialog title="我的订单" :visible.sync="orderVisible" width="50%">
@@ -87,7 +90,9 @@
             <div>订单状态：{{ orderStatus(order.purchased) }}</div>
           </div>
           <div v-show="orderPurchase(order.purchased)">
-            <el-button type="warning" @click="expendPoint(order.id)">支付</el-button>
+            <el-button type="warning" @click="expendPoint(order.id)"
+              >支付</el-button
+            >
           </div>
         </div>
         <el-divider></el-divider>
@@ -189,6 +194,15 @@ export default {
           this.cartDialogVisible = false;
         })
         .catch(error => console.log(error));
+    },
+    showAsset() {
+      let routeData = this.$router.resolve({
+        path: "/personal",
+        query: {
+          activeName: "fifth"
+        }
+      });
+      window.open(routeData.href, "_blank");
     },
     showOrder() {
       this.orderVisible = true;
@@ -408,6 +422,11 @@ export default {
 }
 .orderButton {
   right: 80px;
+  bottom: 15px;
+  position: fixed;
+}
+.assetButton {
+  right: 220px;
   bottom: 15px;
   position: fixed;
 }

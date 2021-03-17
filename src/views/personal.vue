@@ -144,7 +144,10 @@
       <el-tab-pane label="我的相册" name="fourth">
         <gallery></gallery>
       </el-tab-pane>
-      <el-tab-pane label="从天而降的神奇工具箱" name="fifth">
+      <el-tab-pane label="我的资产" name="fifth">
+        <asset></asset>
+      </el-tab-pane>
+      <el-tab-pane label="从天而降的神奇工具箱" name="sixth">
         <utils></utils>
       </el-tab-pane>
     </el-tabs>
@@ -155,11 +158,13 @@
 import utils from "@/components/utils.vue";
 import archive from "@/components/archive.vue";
 import gallery from "@/components/gallery.vue";
+import asset from "@/components/asset.vue";
 export default {
   components: {
     utils,
     archive,
-    gallery
+    gallery,
+    asset
   },
   data() {
     return {
@@ -181,6 +186,16 @@ export default {
       },
       blog: []
     };
+  },
+  created() {
+    this.getUserData();
+    this.getMyBlogs();
+    this.getCurrentAvatar();
+    this.getHistoryAvatar();
+    console.log("URL参数" + this.$route.query.activeName);
+    if (typeof this.$route.query.activeName !== "undefined") {
+      this.activeName = this.$route.query.activeName;
+    }
   },
   methods: {
     deleteAvatar(avatarId) {
@@ -326,12 +341,6 @@ export default {
       }
       return "";
     }
-  },
-  created() {
-    this.getUserData();
-    this.getMyBlogs();
-    this.getCurrentAvatar();
-    this.getHistoryAvatar();
   }
 };
 </script>
