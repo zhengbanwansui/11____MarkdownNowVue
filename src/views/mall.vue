@@ -90,6 +90,9 @@
             <div>订单状态：{{ orderStatus(order.purchased) }}</div>
           </div>
           <div v-show="orderPurchase(order.purchased)">
+            <el-button type="danger" @click="cancelOrder(order.id)"
+              >取消订单</el-button
+            >
             <el-button type="warning" @click="expendPoint(order.id)"
               >支付</el-button
             >
@@ -131,6 +134,31 @@ export default {
     this.pageProducts();
   },
   methods: {
+    cancelOrder(orderId) {
+      this.$axios
+        .delete(
+          this.$store.state.ip +
+            "/markdownnow-reward/order/cancel/orderId/" +
+            orderId
+        )
+        .then(response => {
+          if (response.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: "取消成功",
+              type: "success"
+            });
+            this.orderVisible = false;
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(error => console.log(error));
+    },
     expendPoint(orderId) {
       this.$axios
         .put(this.$store.state.ip + "/markdownnow-reward/buy/expendPoint", {
@@ -156,17 +184,19 @@ export default {
         .catch(error => console.log(error));
     },
     orderPurchase(i) {
-      if (i === 1) {
-        return false;
-      } else {
+      if (i === 0) {
         return true;
+      } else {
+        return false;
       }
     },
     orderStatus(i) {
       if (i === 1) {
         return "已完成";
-      } else {
+      } else if (i === 0) {
         return "待支付";
+      } else if (i === -1) {
+        return "已取消";
       }
     },
     changeOrderPage(toPage) {
