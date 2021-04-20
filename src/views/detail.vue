@@ -20,7 +20,50 @@
         :scrollStyle="true"
       />
     </div>
-    <el-divider></el-divider>
+    <div style="height: 30px"></div>
+    <el-button type="warning" @click="showAssetDialog = true"
+      >打赏博主</el-button
+    >
+    <el-dialog title="选择礼物" :visible.sync="showAssetDialog" width="70%">
+      <!--      礼物-->
+      <div>
+        <div class="flexCard">
+          <div v-for="(asset, index) in asset.records" :key="index">
+            <div @click="addGift(asset.productId, asset.name)">
+              <el-card shadow="hover" class="assetCard">
+                <img
+                  class="image"
+                  :src="`${minioAddressAndPort}/product/${asset.icon}`"
+                  alt="detail-icon"
+                />
+                <h3>{{ asset.name }} x{{ asset.number }}</h3>
+              </el-card>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :page-size="10"
+            :total="asset['total']"
+            @prev-click="changeAssetPage(assetPage - 1)"
+            @next-click="changeAssetPage(assetPage + 1)"
+            @current-change="changeAssetPage"
+          ></el-pagination>
+        </div>
+      </div>
+      <!--      礼物-->
+      <div class="gift">
+        名称<el-input style="width: 200px" v-model="giftName"></el-input>
+        数量<el-input-number
+          style="width: 150px"
+          v-model="giftNum"
+        ></el-input-number>
+        <el-button type="warning" @click="giveAReward">赠送礼物！</el-button>
+      </div>
+    </el-dialog>
+    <div style="height: 30px"></div>
     <div class="commentArea">
       <div style="display: flex;">
         <el-input type="text" v-model="myComment"></el-input>
@@ -37,10 +80,10 @@
               @click="addTargetComment(item.id)"
               type="text"
               style="margin-left: 20px"
-            >发送</el-button
+              >发送</el-button
             >
             <el-button type="text" style="margin-left: 20px" slot="reference"
-            >评论</el-button
+              >评论</el-button
             >
           </el-popover>
           <el-button
@@ -85,12 +128,20 @@
         </div>
       </div>
     </div>
+    <div style="height: 30px"></div>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
+      giftId: null,
+      giftName: "",
+      giftNum: 0,
+      asset: {},
+      assetPage: 1,
+      minioAddressAndPort: this.$store.state.minioAddress,
+      showAssetDialog: false,
       blog: {
         title: "null",
         text: "null"
@@ -103,8 +154,92 @@ export default {
   async created() {
     await this.getBlogDetail();
     await this.getCommentList();
+    this.pageAsset();
   },
   methods: {
+    addGift(productId, assetName) {
+      this.giftId = productId;
+      this.giftName = assetName;
+      this.giftNum = this.giftNum + 1;
+    },
+    changeAssetPage(toPage) {
+      this.assetPage = toPage;
+      this.$axios
+        .get(
+          this.$store.state.ip +
+            "/markdownnow-reward/userAsset/userId/" +
+            localStorage.getItem("userId") +
+            "/current/" +
+            this.assetPage +
+            "/size/10"
+        )
+        .then(response => {
+          if (response.data.code === 200) {
+            this.asset = response.data.data;
+            console.log("获取到资产");
+            console.log(this.asset);
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(error => console.log(error));
+    },
+    pageAsset() {
+      this.$axios
+        .get(
+          this.$store.state.ip +
+            "/markdownnow-reward/userAsset/userId/" +
+            localStorage.getItem("userId") +
+            "/current/" +
+            this.assetPage +
+            "/size/10"
+        )
+        .then(response => {
+          if (response.data.code === 200) {
+            this.asset = response.data.data;
+            console.log("获取到资产");
+            console.log(this.asset);
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(error => console.log(error));
+    },
+    giveAReward() {
+      let data = {
+        num: this.giftNum,
+        productId: this.giftId,
+        targetUserId: this.blog["authorId"],
+        userId: localStorage.getItem("userId")
+      };
+      console.log(data);
+      this.$axios
+        .post(this.$store.state.ip + "/markdownnow-reward/reward", data)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: response.data.data,
+              type: "success"
+            });
+          } else {
+            this.$message({
+              showClose: true,
+              message: response.data.msg,
+              type: "error"
+            });
+          }
+        })
+        .catch(error => console.log(error));
+    },
     deleteMyComment(commentId) {
       this.$axios
         .delete(this.$store.state.ip + "/api/blogComment/" + commentId)
@@ -274,5 +409,29 @@ export default {
 .childComment {
   width: 100%;
   padding-left: 80px;
+}
+/*asset的css*/
+.image {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  margin: 5px 0;
+}
+.flexCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.assetCard {
+  width: 200px;
+  height: 170px;
+}
+.gift {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 </style>
